@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+int main()
+{
+    int fd;
+    struct stat s;
+    DIR *dir;
+    struct dirent *entry;
+    fd = open("sample.txt", O_RDWR | O_CREAT, 0644);
+    write(fd, "UNIX System", 11);
+    fcntl(fd, F_SETFL, O_APPEND);
+    lseek(fd, 0, SEEK_SET);
+    printf("File opened successfully\n");
+    if (stat("sample.txt", &s) == 0)
+    {
+        printf("File Size: %ld bytes\n", (long)s.st_size);
+        printf("File Inode: %ld\n", (long)s.st_ino);
+    }
+    close(fd);
+    dir = opendir(".");
+    if (dir != NULL)
+    {
+        printf("\nDirectory Contents:\n");
+        while ((entry = readdir(dir)) != NULL)
+        {
+            printf("%s\n", entry->d_name);
+        }
+        closedir(dir);
+    }
+    return 0;
+}
